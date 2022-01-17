@@ -11,9 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: const MyHomePage(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
+            .copyWith(secondary: Colors.amber),
+      ),
     );
   }
 }
@@ -39,7 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // Metodo REsponsavel por Abrir o Form de Cadastro de Transações
   _openTransactionForm(BuildContext context) {
     showModalBottomSheet(
-        context: context, builder: (_) {
+        context: context,
+        builder: (_) {
           return TransactionForm(_addTransaction);
         });
   }
