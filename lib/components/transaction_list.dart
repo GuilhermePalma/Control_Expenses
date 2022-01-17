@@ -14,7 +14,6 @@ class TransactionList extends StatelessWidget {
       child: ListView.builder(
         itemCount: transactiontions.length,
         itemBuilder: (contex, index) {
-
           final tran = transactiontions[index];
           return Card(
             child: Row(
@@ -46,10 +45,7 @@ class TransactionList extends StatelessWidget {
                   children: [
                     Text(
                       tran.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
                       DateFormat('d MMM y').format(tran.date),

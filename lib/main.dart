@@ -17,6 +17,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
             .copyWith(secondary: Colors.amber),
+        fontFamily: "Quicksand",
+        textTheme: ThemeData.light().textTheme.copyWith(
+              headline6: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+        appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontFamily: "OpenSans",
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -31,13 +45,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Variavel é Fixa, porem pode ser Incluido e Excluido Itens, mantendo a Referencia da Lista
-  final List<Transaction> transactionList = [
+  final List<Transaction> transactionList = [/*
     Transaction(
         value: 300.0, id: 0, title: "Conta de Luz", date: DateTime.now()),
     Transaction(
         value: 23.83, id: 1, title: "Supermercado", date: DateTime.now()),
     Transaction(
-        value: 125.65, id: 2, title: "Conta de Agua", date: DateTime.now()),
+        value: 125.65, id: 2, title: "Conta de Agua", date: DateTime.now()), */
   ];
 
   // Metodo REsponsavel por Abrir o Form de Cadastro de Transações
@@ -75,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.add),
           )
         ],
-        title: const Text("Controle de Despesas", textAlign: TextAlign.center),
+        title: const Text("Controle de Despesas"),
       ),
       body: SingleChildScrollView(
         child: Column(
