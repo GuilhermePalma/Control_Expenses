@@ -50,7 +50,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Variavel é Fixa, porem pode ser Incluido e Excluido Itens, mantendo a Referencia da Lista
+  /// Variavel que armazenará as Transações do Usuario
   final List<Transaction> transactionList = [
     Transaction(
         value: 300.0, id: 0, title: "Conta de Luz", date: DateTime.now()),
@@ -80,7 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
         date: DateTime.now().subtract(const Duration(days: 1))),
   ];
 
-  // Metodo REsponsavel por Abrir o Form de Cadastro de Transações
+  /// Armazena a Quantidade dos "Ultimos Dias" exibidos no Chart
+  int _quantityDays = 7;
+
+  /// Armazena o Valor da quantidade dos "Utlimos Dias" Disponivel
+  final List<int> lastDays = [7, 10, 14];
+
+  /// Abre o Form de Cadastro de Transações, no estilo Modal
   _openTransactionForm(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -90,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Adiciona uma Nova Transação à Lista de Transações
+  /// Adiciona uma Nova Transação à Lista de Transações
   _addTransaction(String titleTransaction, double valueTransaction,
       DateTime dateTransaction) {
     final newTransaction = Transaction(
@@ -107,17 +113,41 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
-  // Obtem as Transações dentro do Intervalo dos Ultimos 7 Dias a partir do dia Atual
-  List<Transaction> get lastWeekTransactions {
+  /// Obtem as Transações dentro do Intervalo de Dias. Intervalo a partir da Data Atual
+  ///
+  /// int quantityDays: Representa quantos dias Estarão no Intervalo
+  List<Transaction> lastWeekTransactions(int quantityDays) {
+    /// Obtem os Dias da Lista anteriores ao dia atual que satisfação ao Intervalo
     return transactionList.where((element) {
-      // Verifica se a Data é depois do dia atual, subtraindo 7 dias
+      // Verifica se a Data é depois do Periodo Especificado
       bool isAfterDate = element.date
-          .isAfter(DateTime.now().subtract(const Duration(days: 7)));
+          .isAfter(DateTime.now().subtract(Duration(days: quantityDays)));
 
       // Verifica se a Data é antes do dia Atual
       bool isBeforeDate = element.date.isBefore(DateTime.now());
       return isAfterDate && isBeforeDate;
     }).toList();
+  }
+
+  /// Metodo Responsavel por Alterar a Quantidade de Dias Exibidos no Chart
+  _changeWindow(int quantityDays, bool isNextWindow) {
+    int position = isNextWindow
+        ? lastDays.indexOf(quantityDays) + 1
+        : lastDays.indexOf(quantityDays) - 1;
+
+    if (position >= lastDays.length) {
+      // Caso a Posição seja o Ultimo Item da Lista, exibe o Primeiro
+      _quantityDays = lastDays.first;
+    } else if (position < 0) {
+      // Caso a Posição seja o Primeiro Item da Lista e esteja voltando, exibe o Ultimo
+      _quantityDays = lastDays.last;
+    } else {
+      // Soma/Subtrai para a Posição Sucessora/Antecessora
+      _quantityDays = lastDays.elementAt(position);
+    }
+
+    // Atualiza a Quantidade de Dias Exibido
+    setState(() => _quantityDays);
   }
 
   @override
@@ -139,7 +169,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(lastWeekTransactions),
+            Chart(
+              listTransactions: lastWeekTransactions(_quantityDays),
+              quantityDays: _quantityDays,
+              changeWindow: _changeWindow,
+            ),
             TransactionList(transactionList),
           ],
         ),

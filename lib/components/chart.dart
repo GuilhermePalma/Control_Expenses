@@ -1,17 +1,22 @@
 import 'package:control_expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
-  Chart(this.listTransactions);
+  Chart({
+    required this.listTransactions,
+    required this.quantityDays,
+    required this.changeWindow,
+  });
 
   final List<Transaction> listTransactions;
+  final int quantityDays;
+  final void Function(int, bool) changeWindow;
 
-  // Retorna uma Lista com os Ultimos 7 dias antes da Data Atual com os Valores Gastos
+  /// Retorna uma Lista com agrupando as Transações do mesmo Dia
   List<Map<String, Object>> get _groupedTransactions {
-    return List.generate(7, (index) {
+    return List.generate(quantityDays, (index) {
       // Variavel que gerará os valores dos ultimos 7 dias dinamicamente
       final dayWeek = DateTime.now().subtract(Duration(days: index));
 
@@ -32,7 +37,7 @@ class Chart extends StatelessWidget {
     });
   }
 
-  // Retorna o Valor Gasto nos ultimos 7 Dias
+  /// Retorna o Valor Gasto no periodo Especificado
   double _totalValueWeek(listTransaction) {
     return listTransaction.fold(
         0.0, (sum, transaction) => sum + transaction["value"]);
@@ -48,24 +53,45 @@ class Chart extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(20),
       elevation: 6,
-      child: Row(
-        children: groupedTransactions.reversed.map((item) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 5,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () => changeWindow(quantityDays, false),
+                icon: const Icon(Icons.arrow_back_ios_rounded),
               ),
-              child: ChartBar(
-                value: (item["value"] as double),
-                day: (item["dayWeek"] as String),
-                percentage: totalValueWeek == 0
-                    ? 0
-                    : (item["value"] as double) / totalValueWeek,
+              Text(
+                "Ultimos $quantityDays Dias",
+                style: Theme.of(context).textTheme.headline6,
               ),
-            ),
-          );
-        }).toList(),
+              IconButton(
+                onPressed: () => changeWindow(quantityDays, true),
+                icon: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+            ],
+          ),
+          Row(
+            children: groupedTransactions.reversed.map((item) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
+                  ),
+                  child: ChartBar(
+                    value: (item["value"] as double),
+                    day: (item["dayWeek"] as String),
+                    percentage: totalValueWeek == 0
+                        ? 0
+                        : (item["value"] as double) / totalValueWeek,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
