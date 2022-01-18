@@ -31,50 +31,39 @@ class TransactionList extends StatelessWidget {
           : ListView.builder(
               itemCount: transactiontions.length,
               itemBuilder: (contex, index) {
-                final tran = transactiontions[index];
+                final transaction = transactiontions[index];
                 return Card(
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          'R\$ ${tran.value.toStringAsFixed(2)}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            tran.title,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          Text(
-                            DateFormat('d MMM y').format(tran.date),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                   elevation: 5,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 8,
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FittedBox(
+                            child: Text(
+                          'R\$ ${transaction.value.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        )),
+                      ),
+                    ),
+                    title: Text(
+                      transaction.title,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    subtitle: Text(
+                      DateFormat('d MMM y').format(transaction.date),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
