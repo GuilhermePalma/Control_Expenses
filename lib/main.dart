@@ -25,6 +25,10 @@ class MyApp extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
+              button: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
@@ -79,19 +83,21 @@ class _MyHomePageState extends State<MyHomePage> {
   // Metodo REsponsavel por Abrir o Form de Cadastro de Transações
   _openTransactionForm(BuildContext context) {
     showModalBottomSheet(
-        context: context,
-        builder: (_) {
-          return TransactionForm(_addTransaction);
-        });
+      context: context,
+      builder: (_) {
+        return TransactionForm(_addTransaction);
+      },
+    );
   }
 
   // Adiciona uma Nova Transação à Lista de Transações
-  _addTransaction(String title, double value) {
+  _addTransaction(String titleTransaction, double valueTransaction,
+      DateTime dateTransaction) {
     final newTransaction = Transaction(
       id: Random().nextInt(150),
-      title: title,
-      value: value,
-      date: DateTime.now(),
+      title: titleTransaction,
+      value: valueTransaction,
+      date: dateTransaction,
     );
 
     // Atualiza o Estado da Lista exibida no APP
