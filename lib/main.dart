@@ -56,40 +56,40 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> transactionList = [
     Transaction(
       value: 300.0,
-      id: Transaction.getIdNow(),
+      id: Transaction.getIdNow() + "1",
       title: "Conta de Luz",
       date: DateTime.now(),
     ),
     Transaction(
       value: 23.83,
-      id: Transaction.getIdNow(),
+      id: Transaction.getIdNow() + "2",
       title: "Supermercado",
       date: DateTime.now(),
     ),
     Transaction(
       value: 125.65,
-      id: Transaction.getIdNow(),
+      id: Transaction.getIdNow() + "3",
       title: "Conta de Agua",
       date: DateTime.now(),
     ),
     Transaction(
         value: 125.65,
-        id: Transaction.getIdNow(),
+        id: Transaction.getIdNow() + "4",
         title: "Conta de Agua",
         date: DateTime.now().add(const Duration(days: 1))),
     Transaction(
         value: 300.0,
-        id: Transaction.getIdNow(),
+        id: Transaction.getIdNow() + "5",
         title: "Conta de Luz1",
         date: DateTime.now().subtract(const Duration(days: 7))),
     Transaction(
         value: 23.83,
-        id: Transaction.getIdNow(),
+        id: Transaction.getIdNow() + "6",
         title: "Supermercado1",
         date: DateTime.now().subtract(const Duration(days: 8))),
     Transaction(
       value: 125.65,
-      id: Transaction.getIdNow(),
+      id: Transaction.getIdNow() + "7",
       title: "Conta de Agua1",
       date: DateTime.now().subtract(const Duration(days: 1)),
     ),
@@ -126,6 +126,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Fecha o Modal Aberto
     _closeTransactionForm();
+  }
+
+  /// Exclui uma Transação da Lista
+  _deleteTransaction(String idTransaction) {
+    // Atualiza o Estado da Lista exibida no APP, excluindo o Elemento
+    setState(() {
+      transactionList.removeWhere((element) => element.id == idTransaction);
+    });
   }
 
   /// Obtem as Transações dentro do Intervalo de Dias. Intervalo a partir da Data Atual
@@ -189,7 +197,9 @@ class _MyHomePageState extends State<MyHomePage> {
               quantityDays: _quantityDays,
               changeWindow: _changeWindow,
             ),
-            TransactionList(transactionList),
+            TransactionList(
+                transactiontions: transactionList,
+                onDelete: _deleteTransaction),
           ],
         ),
       ),
