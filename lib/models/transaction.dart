@@ -1,5 +1,7 @@
+import 'package:intl/intl.dart';
+
 class Transaction {
-  final int id;
+  final String id;
   final String title;
   final double value;
   final DateTime date;
@@ -13,5 +15,9 @@ class Transaction {
 
   static bool isValidInfos(String title, double value) {
     return title.isNotEmpty && value > 0;
+  }
+
+  static String getIdNow() {
+    return DateFormat("DDMMy_H_m_s").format(DateTime.now());
   }
 }

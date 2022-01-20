@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransactionForm extends StatefulWidget {
-  final void Function(String, double, DateTime) onSubmit;
+  final void Function(Transaction) onSubmit;
+  final void Function() onCancel;
 
-  TransactionForm(this.onSubmit);
+  TransactionForm({
+    required this.onSubmit,
+    required this.onCancel,
+  });
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -21,7 +25,12 @@ class _TransactionFormState extends State<TransactionForm> {
     final value = double.tryParse(_valueController.text) ?? 0.0;
 
     if (Transaction.isValidInfos(title, value)) {
-      widget.onSubmit(title, value, _dateSelected);
+      widget.onSubmit(Transaction(
+        id: Transaction.getIdNow(),
+        title: title,
+        value: value,
+        date: _dateSelected,
+      ));
     }
   }
 
@@ -100,7 +109,7 @@ class _TransactionFormState extends State<TransactionForm> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: widget.onCancel,
                   style: TextButton.styleFrom(primary: Colors.red),
                   child: const Text("Cancelar"),
                 ),

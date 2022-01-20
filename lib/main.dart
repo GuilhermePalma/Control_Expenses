@@ -1,5 +1,4 @@
 import 'package:control_expenses/components/transaction_form.dart';
-import 'dart:math';
 import 'package:control_expenses/components/transaction_list.dart';
 import 'package:control_expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
@@ -56,31 +55,44 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Variavel que armazenará as Transações do Usuario
   final List<Transaction> transactionList = [
     Transaction(
-        value: 300.0, id: 0, title: "Conta de Luz", date: DateTime.now()),
+      value: 300.0,
+      id: Transaction.getIdNow(),
+      title: "Conta de Luz",
+      date: DateTime.now(),
+    ),
     Transaction(
-        value: 23.83, id: 1, title: "Supermercado", date: DateTime.now()),
+      value: 23.83,
+      id: Transaction.getIdNow(),
+      title: "Supermercado",
+      date: DateTime.now(),
+    ),
     Transaction(
-        value: 125.65, id: 2, title: "Conta de Agua", date: DateTime.now()),
+      value: 125.65,
+      id: Transaction.getIdNow(),
+      title: "Conta de Agua",
+      date: DateTime.now(),
+    ),
     Transaction(
         value: 125.65,
-        id: 2,
+        id: Transaction.getIdNow(),
         title: "Conta de Agua",
         date: DateTime.now().add(const Duration(days: 1))),
     Transaction(
         value: 300.0,
-        id: 3,
+        id: Transaction.getIdNow(),
         title: "Conta de Luz1",
         date: DateTime.now().subtract(const Duration(days: 7))),
     Transaction(
         value: 23.83,
-        id: 4,
+        id: Transaction.getIdNow(),
         title: "Supermercado1",
         date: DateTime.now().subtract(const Duration(days: 8))),
     Transaction(
-        value: 125.65,
-        id: 5,
-        title: "Conta de Agua1",
-        date: DateTime.now().subtract(const Duration(days: 1))),
+      value: 125.65,
+      id: Transaction.getIdNow(),
+      title: "Conta de Agua1",
+      date: DateTime.now().subtract(const Duration(days: 1)),
+    ),
   ];
 
   /// Armazena a Quantidade dos "Ultimos Dias" exibidos no Chart.
@@ -94,7 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        return TransactionForm(_addTransaction);
+        return TransactionForm(
+          onSubmit: _addTransaction,
+          onCancel: _closeTransactionForm,
+        );
       },
     );
   }
@@ -105,15 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Adiciona uma Nova Transação à Lista de Transações
-  _addTransaction(String titleTransaction, double valueTransaction,
-      DateTime dateTransaction) {
-    final newTransaction = Transaction(
-      id: Random().nextInt(150),
-      title: titleTransaction,
-      value: valueTransaction,
-      date: dateTransaction,
-    );
-
+  _addTransaction(Transaction newTransaction) {
     // Atualiza o Estado da Lista exibida no APP
     setState(() => transactionList.add(newTransaction));
 
