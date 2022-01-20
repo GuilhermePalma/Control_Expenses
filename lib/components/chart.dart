@@ -1,7 +1,7 @@
+import 'package:control_expenses/components/chart_item.dart';
 import 'package:control_expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
   Chart({
@@ -33,7 +33,7 @@ class Chart extends StatelessWidget {
 
       // Retorna um Map com o Dia da Semana (Sigla em Ingles) e o Valor do Dia
       // todo: alterar para DateFormat.E().format(dayWeek)[0]
-      return {"dayWeek": DateFormat('d').format(dayWeek), "value": sumDay};
+      return {"dayWeek": DateFormat('d/MM').format(dayWeek), "value": sumDay};
     });
   }
 
@@ -41,6 +41,16 @@ class Chart extends StatelessWidget {
   double _totalValueWeek(listTransaction) {
     return listTransaction.fold(
         0.0, (sum, transaction) => sum + transaction["value"]);
+  }
+
+  /// Retorna o Total de Semanas
+  int get _totalWeek {
+    if (quantityDays % 7 == 0) {
+      return int.parse(((quantityDays / 7)).toStringAsFixed(0));
+    } else {
+      int weeksComplete = quantityDays - (quantityDays % 7);
+      return int.parse(((weeksComplete / 7) + 1).toStringAsFixed(0));
+    }
   }
 
   @override
@@ -72,25 +82,71 @@ class Chart extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: groupedTransactions.reversed.map((item) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 5,
-                  ),
-                  child: ChartBar(
-                    value: (item["value"] as double),
-                    day: (item["dayWeek"] as String),
-                    percentage: totalValueWeek == 0
-                        ? 0
-                        : (item["value"] as double) / totalValueWeek,
-                  ),
+          quantityDays <= 10
+              ? Row(
+                  children: groupedTransactions.reversed.map((item) {
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 5,
+                        ),
+                        child: ChartItem(
+                          value: (item["value"] as double),
+                          day: (item["dayWeek"] as String),
+                          percentage: totalValueWeek == 0
+                              ? 0
+                              : (item["value"] as double) / totalValueWeek,
+                          isCircle: false,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                )
+              : Column(
+                  children: List.generate(
+                    _totalWeek,
+                    (index) {
+                      // Variaveis que amrazenam os Valores que serão obtidos da Semana
+                      int initialValue = index == 0 ? 0 : 7 * (index);
+                      int finalValue = 7 * (index == 0 ? 1 : index + 1);
+
+                      if (finalValue > groupedTransactions.length) {
+                        finalValue = groupedTransactions.length;
+                      }
+
+                      /// Retorna uma Linha com os Itens
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: groupedTransactions
+                            .getRange(initialValue, finalValue)
+                            .toList()
+                            .map((item) {
+                              return Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 5,
+                                  ),
+                                  child: ChartItem(
+                                    value: (item["value"] as double),
+                                    day: (item["dayWeek"] as String),
+                                    percentage: totalValueWeek == 0
+                                        ? 0
+                                        : (item["value"] as double) /
+                                            totalValueWeek,
+                                    isCircle: true,
+                                  ),
+                                ),
+                              );
+                            })
+                            .toList()
+                            .reversed
+                            .toList(),
+                      );
+                    },
+                  ).reversed.toList(),
                 ),
-              );
-            }).toList(),
-          ),
         ],
       ),
     );

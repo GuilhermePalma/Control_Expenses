@@ -11,12 +11,14 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  /// Cria a Parte Principal do APP (Theme) e chama a classe que exibe o Home
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
       theme: ThemeData(
+        /// Define Estilo Utilizado no APP
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
             .copyWith(secondary: Colors.amber),
         fontFamily: "Quicksand",
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Classe que irá Gerenciar a parte do Home do APP. Nele acontece mudanças de Estado
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -80,11 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
         date: DateTime.now().subtract(const Duration(days: 1))),
   ];
 
-  /// Armazena a Quantidade dos "Ultimos Dias" exibidos no Chart
+  /// Armazena a Quantidade dos "Ultimos Dias" exibidos no Chart.
   int _quantityDays = 7;
 
   /// Armazena o Valor da quantidade dos "Utlimos Dias" Disponivel
-  final List<int> lastDays = [7, 10, 14];
+  final List<int> lastDays = [7, 10, 14, 35, 91];
 
   /// Abre o Form de Cadastro de Transações, no estilo Modal
   _openTransactionForm(BuildContext context) {
@@ -94,6 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
         return TransactionForm(_addTransaction);
       },
     );
+  }
+
+  /// Fecha o Modal Aberto
+  _closeTransactionForm() {
+    Navigator.of(context).pop();
   }
 
   /// Adiciona uma Nova Transação à Lista de Transações
@@ -110,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => transactionList.add(newTransaction));
 
     // Fecha o Modal Aberto
-    Navigator.of(context).pop();
+    _closeTransactionForm();
   }
 
   /// Obtem as Transações dentro do Intervalo de Dias. Intervalo a partir da Data Atual
