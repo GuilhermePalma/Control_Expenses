@@ -173,33 +173,71 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _quantityDays);
   }
 
+  final List<bool> isSelected = <bool>[true, false];
+
   @override
   Widget build(BuildContext context) {
     // Organiza a Lista de Transações pelas Datas de forma Decrescente
     transactionList.sort((a, b) => b.date.compareTo(a.date));
 
+    final _appBarLayout = AppBar(
+      actions: <Widget>[
+        IconButton(
+          onPressed: () => _openTransactionForm(context),
+          icon: const Icon(Icons.add),
+        )
+      ],
+      title: const Text("Controle de Despesas"),
+    );
+
+    // Obtem o Tamanho Disponivel para a List Ocupar
+    final disponableHeight = MediaQuery.of(context).size.height -
+        _appBarLayout.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => _openTransactionForm(context),
-            icon: const Icon(Icons.add),
-          )
-        ],
-        title: const Text("Controle de Despesas"),
-      ),
+      appBar: _appBarLayout,
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(
-              listTransactions: lastWeekTransactions(_quantityDays),
-              quantityDays: _quantityDays,
-              changeWindow: _changeWindow,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: ToggleButtons(
+                color: Colors.black.withOpacity(0.60),
+                borderRadius: BorderRadius.circular(4.0),
+                isSelected: isSelected,
+                onPressed: (index) {
+                  setState(() {
+                    // Tira a Seleção dos Itens Selecionados
+                    if (isSelected.contains(true)) {
+                      int indexItem = isSelected.indexOf(true);
+                      isSelected[indexItem] = false;
+                    }
+
+                    // Seleciona o Item que foi Clicado
+                    isSelected[index] = true;
+                  });
+                },
+                children: const [
+                  Icon(Icons.list_sharp),
+                  Icon(Icons.bar_chart_rounded),
+                ],
+              ),
             ),
-            TransactionList(
-                transactiontions: transactionList,
-                onDelete: _deleteTransaction),
+            // Obtem a Primeira Posição (Exibir Lista)
+            isSelected.elementAt(0)
+                ? SizedBox(
+                    height: disponableHeight * 0.856,
+                    child: TransactionList(
+                      transactiontions: transactionList,
+                      onDelete: _deleteTransaction,
+                    ),
+                  )
+                : Chart(
+                    listTransactions: lastWeekTransactions(_quantityDays),
+                    quantityDays: _quantityDays,
+                    changeWindow: _changeWindow,
+                  ),
           ],
         ),
       ),
