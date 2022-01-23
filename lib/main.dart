@@ -247,20 +247,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     changeWindow: _changeWindow,
                   ),
 
-            TextButton(
-              onPressed: () {
-                setState(() => showCaptionChart = !showCaptionChart);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(showCaptionChart
-                      ? Icons.visibility_off_rounded
-                      : Icons.manage_search_outlined),
-                  Text("${showCaptionChart ? 'Esconder' : 'Ver'} Legenda"),
-                ],
+            if (isSelectedButton.elementAt(1))
+              TextButton(
+                onPressed: () {
+                  setState(() => showCaptionChart = !showCaptionChart);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(showCaptionChart
+                        ? Icons.visibility_off_rounded
+                        : Icons.manage_search_outlined),
+                    Text("${showCaptionChart ? 'Esconder' : 'Ver'} Legenda"),
+                  ],
+                ),
               ),
-            ),
 
             if (isSelectedButton.elementAt(1) && showCaptionChart)
               const ChartCaption(),
