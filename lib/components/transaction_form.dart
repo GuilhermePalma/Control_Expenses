@@ -49,82 +49,96 @@ class _TransactionFormState extends State<TransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              children: [
-                TextField(
-                  // TODO ALTERAR PARA UM METODO QUE ABRA O TEXTFIELD DE PREÇO
-                  onSubmitted: (_) => _submitForm(),
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: "Titulo",
-                  ),
-                ),
-                TextField(
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  // É ignorado o valor desse TextField, para usar os valores dos Controllers
-                  onSubmitted: (_) => _submitForm(),
-                  controller: _valueController,
-                  decoration: const InputDecoration(
-                    labelText: "Preço (R\$)",
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Data da Transação",
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Data: ${DateFormat("dd MMM y").format(_dateSelected)}',
-                          ),
-                          TextButton(
-                            onPressed: _showDatePicker,
-                            child: const Text("Escolher Data"),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: widget.onCancel,
-                  style: TextButton.styleFrom(primary: Colors.red),
-                  child: const Text("Cancelar"),
-                ),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text(
-                    "Cadastrar Transação",
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.button!.color,
+    return SingleChildScrollView(
+      child: Card(
+        margin: const EdgeInsets.all(16),
+        elevation: 5,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            20,
+            10,
+            20,
+            // Da o Espaçamento de quando o Teclado Ocupa Parte da Tela
+            MediaQuery.of(context).viewInsets.bottom + 10,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Nova Transação",
+                style: Theme.of(context).textTheme.headline6?.merge(
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                    ),
+              ),
+              Column(
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    // Avança para o Proximo TextField (Valor)
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      labelText: "Titulo",
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  TextField(
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    // Abre a Proxima Parte do Cadastro (Data)
+                    onSubmitted: (_) => _showDatePicker(),
+                    controller: _valueController,
+                    decoration: const InputDecoration(
+                      labelText: "Preço (R\$)",
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Data da Transação",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Data: ${DateFormat("dd MMM y").format(_dateSelected)}',
+                            ),
+                            TextButton(
+                              onPressed: _showDatePicker,
+                              child: const Text("Escolher Data"),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: widget.onCancel,
+                    style: TextButton.styleFrom(primary: Colors.red),
+                    child: const Text("Cancelar"),
+                  ),
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    child: Text(
+                      "Cadastrar Transação",
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.button!.color,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
