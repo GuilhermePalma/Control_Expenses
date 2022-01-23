@@ -1,3 +1,4 @@
+import 'package:control_expenses/components/chart_caption.dart';
 import 'package:control_expenses/components/transaction_form.dart';
 import 'package:control_expenses/components/transaction_list.dart';
 import 'package:control_expenses/models/transaction.dart';
@@ -173,7 +174,11 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _quantityDays);
   }
 
-  final List<bool> isSelected = <bool>[true, false];
+  // List que controla a Seleção dos Toggle Buttons
+  final List<bool> isSelectedButton = <bool>[true, false];
+
+  // Variavel que Controla o Estade de "Ver" ou não a Legenda do Grafico
+  bool showCaptionChart = false;
 
   @override
   Widget build(BuildContext context) {
@@ -205,17 +210,20 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ToggleButtons(
                 color: Colors.black.withOpacity(0.60),
                 borderRadius: BorderRadius.circular(4.0),
-                isSelected: isSelected,
+                isSelected: isSelectedButton,
                 onPressed: (index) {
                   setState(() {
+                    // Remove a Legenda (O Usuario sempre terá que clicar p/ acessar)
+                    showCaptionChart = false;
+
                     // Tira a Seleção dos Itens Selecionados
-                    if (isSelected.contains(true)) {
-                      int indexItem = isSelected.indexOf(true);
-                      isSelected[indexItem] = false;
+                    if (isSelectedButton.contains(true)) {
+                      int indexItem = isSelectedButton.indexOf(true);
+                      isSelectedButton[indexItem] = false;
                     }
 
                     // Seleciona o Item que foi Clicado
-                    isSelected[index] = true;
+                    isSelectedButton[index] = true;
                   });
                 },
                 children: const [
@@ -225,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             // Obtem a Primeira Posição (Exibir Lista)
-            isSelected.elementAt(0)
+            isSelectedButton.elementAt(0)
                 ? SizedBox(
                     height: disponableHeight * 0.856,
                     child: TransactionList(
@@ -238,6 +246,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     quantityDays: _quantityDays,
                     changeWindow: _changeWindow,
                   ),
+
+            TextButton(
+              onPressed: () {
+                setState(() => showCaptionChart = !showCaptionChart);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(showCaptionChart
+                      ? Icons.visibility_off_rounded
+                      : Icons.manage_search_outlined),
+                  Text("${showCaptionChart ? 'Esconder' : 'Ver'} Legenda"),
+                ],
+              ),
+            ),
+
+            if (isSelectedButton.elementAt(1) && showCaptionChart)
+              const ChartCaption(),
           ],
         ),
       ),
