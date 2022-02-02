@@ -16,7 +16,9 @@ Ao acessar o APP, é possivel navegar entre diferentes **intervalos de Tempo**, 
 ### Pontos Desenvolvidos
 
 - [X] Fragmentação dos Widgets em arquivos, para maior Manutenibilidade da Arvore de Componentes
+- [X] Criação de Widgets Adapatativos e Responsivos. Eles se adaptam à diferentes tamanhos de dispositivos e sendo compativel com o Design conforme o Sistema Operacional (Android e IOS)
 - [X] Divisão de Responsabilidade entre os Widgets
+- [X] Utilização do modelo de Programação Declarativo; usando de recursos da propria Linguagem para execução de Processos
 - [X] Utilização de Widgets Stateful, com atualização de Estado em tempo de execução
 - [X] Criação e Utilização de um Tema (Theme) customizado para o APP
 - [X] Interação Direta e Indireta entre Widgets

@@ -2,9 +2,11 @@ import 'package:control_expenses/components/chart_caption.dart';
 import 'package:control_expenses/components/transaction_form.dart';
 import 'package:control_expenses/components/transaction_list.dart';
 import 'package:control_expenses/models/transaction.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'components/chart.dart';
+import 'dart:io';
 
 void main() => runApp(const MyApp());
 
@@ -174,35 +176,35 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _quantityDays);
   }
 
-  // List que controla a Seleção dos Toggle Buttons
-  final List<bool> isSelectedButton = <bool>[true, false];
+  /// Retorna o IconButton Adaptado para o IOS e Android
+  Widget _getButtonNavigation(IconData icon, Function() fn) {
+    return Platform.isIOS
+        ? GestureDetector(
+            onTap: fn,
+            child: Icon(icon),
+          )
+        : IconButton(
+            onPressed: fn,
+            icon: Icon(icon),
+          );
+  }
 
-  // Variavel que Controla o Estade de "Ver" ou não a Legenda do Grafico
-  bool showCaptionChart = false;
-
-  @override
-  Widget build(BuildContext context) {
-    // Organiza a Lista de Transações pelas Datas de forma Decrescente
-    transactionList.sort((a, b) => b.date.compareTo(a.date));
-
-    final _appBarLayout = AppBar(
-      actions: <Widget>[
-        IconButton(
-          onPressed: () => _openTransactionForm(context),
-          icon: const Icon(Icons.add),
-        )
-      ],
-      title: const Text("Controle de Despesas"),
-    );
+  /// Retorma o Layout exibido no Body do APP
+  Widget _bodyWidget(double sizeAppBar) {
+    // Objeto MediaQuery para evitar chamadas redundantes
+    final mediaQuery = MediaQuery.of(context);
 
     // Obtem o Tamanho Disponivel para a List Ocupar
-    final disponableHeight = MediaQuery.of(context).size.height -
-        _appBarLayout.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+    final disponableHeight =
+        mediaQuery.size.height - sizeAppBar - mediaQuery.padding.top;
 
-    return Scaffold(
-      appBar: _appBarLayout,
-      body: SingleChildScrollView(
+    // Altura Customizada da Exibição da Lista
+    final heigthList = mediaQuery.orientation == Orientation.portrait
+        ? 0.856 * disponableHeight
+        : 0.7 * disponableHeight;
+
+    return SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
@@ -235,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // Obtem a Primeira Posição (Exibir Lista)
             isSelectedButton.elementAt(0)
                 ? SizedBox(
-                    height: disponableHeight * 0.856,
+                    height: heigthList,
                     child: TransactionList(
                       transactiontions: transactionList,
                       onDelete: _deleteTransaction,
@@ -268,11 +270,56 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openTransactionForm(context),
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  // List que controla a Seleção dos Toggle Buttons
+  final List<bool> isSelectedButton = <bool>[true, false];
+
+  // Variavel que Controla o Estade de "Ver" ou não a Legenda do Grafico
+  bool showCaptionChart = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Organiza a Lista de Transações pelas Datas de forma Decrescente
+    transactionList.sort((a, b) => b.date.compareTo(a.date));
+
+    // Itens da App Bar
+    const Text titleAppBar = Text("Controle de Despesas");
+    final actions = [
+      _getButtonNavigation(
+        Platform.isIOS ? CupertinoIcons.add : Icons.add,
+        () => _openTransactionForm(context),
+      ),
+    ];
+
+    final _appBarAndroid = AppBar(
+      actions: actions,
+      title: titleAppBar,
+    );
+
+    final _appBarIOS = CupertinoNavigationBar(
+      middle: titleAppBar,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: actions,
+      ),
+    );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: _appBarIOS,
+            child: _bodyWidget(_appBarIOS.preferredSize.height),
+          )
+        : Scaffold(
+            appBar: _appBarAndroid,
+            body: _bodyWidget(_appBarAndroid.preferredSize.height),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => _openTransactionForm(context),
+              child: const Icon(Icons.add),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          );
   }
 }

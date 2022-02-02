@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:control_expenses/components/adaptatives/adaptative_button.dart';
+import 'package:control_expenses/components/adaptatives/adaptative_date_picker.dart';
+import 'package:control_expenses/components/adaptatives/adaptative_text_field.dart';
 import 'package:control_expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,10 +11,11 @@ class TransactionForm extends StatefulWidget {
   final void Function(Transaction) onSubmit;
   final void Function() onCancel;
 
-  TransactionForm({
+  const TransactionForm({
+    Key? key,
     required this.onSubmit,
     required this.onCancel,
-  });
+  }) : super(key: key);
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -32,19 +38,6 @@ class _TransactionFormState extends State<TransactionForm> {
         date: _dateSelected,
       ));
     }
-  }
-
-  _showDatePicker() {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: (365 * 4))),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    ).then((value) {
-      _dateSelected = value ?? DateTime.now();
-      setState(() => _dateSelected);
-      return _dateSelected;
-    });
   }
 
   @override
@@ -72,50 +65,21 @@ class _TransactionFormState extends State<TransactionForm> {
               ),
               Column(
                 children: [
-                  TextField(
+                  AdaptativeTextField(
                     controller: _titleController,
-                    // Avança para o Proximo TextField (Valor)
+                    textLabel: "Titulo",
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: "Titulo",
-                    ),
+                    onSubmitted: (_) {},
                   ),
-                  TextField(
-                    keyboardType:
+                  AdaptativeTextField(
+                    textInputType:
                         const TextInputType.numberWithOptions(decimal: true),
                     // Abre a Proxima Parte do Cadastro (Data)
-                    onSubmitted: (_) => _showDatePicker(),
+                    onSubmitted: (_) => Platform.isIOS ? {} : datePicker(),
                     controller: _valueController,
-                    decoration: const InputDecoration(
-                      labelText: "Preço (R\$)",
-                    ),
+                    textLabel: "Preço (R\$)",
                   ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Data da Transação",
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Data: ${DateFormat("dd MMM y").format(_dateSelected)}',
-                            ),
-                            TextButton(
-                              onPressed: _showDatePicker,
-                              child: const Text("Escolher Data"),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  datePicker()
                 ],
               ),
               Row(
@@ -126,21 +90,21 @@ class _TransactionFormState extends State<TransactionForm> {
                     style: TextButton.styleFrom(primary: Colors.red),
                     child: const Text("Cancelar"),
                   ),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    child: Text(
-                      "Cadastrar Transação",
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.button!.color,
-                      ),
-                    ),
-                  ),
+                  AdaptativeButton(
+                      text: "Cadastrar Transação", onPressed: _submitForm),
                 ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget datePicker() {
+    return AdaptativeDatePicker(
+      dateSelected: _dateSelected,
+      onDateChanged: (newDate) => setState(() => _dateSelected = newDate),
     );
   }
 }
