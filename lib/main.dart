@@ -1,4 +1,4 @@
-import 'package:control_expenses/screens/transactions_screen.dart';
+import 'package:control_expenses/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const TransactionsScreen(),
+      home: const TabsScreen(),
     );
   }
 }
