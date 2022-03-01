@@ -5,8 +5,8 @@ import 'package:control_expenses/models/transaction.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'components/chart.dart';
 import 'dart:io';
+import 'components/chart.dart';
 
 void main() => runApp(const MyApp());
 

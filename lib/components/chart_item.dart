@@ -6,12 +6,12 @@ class ChartItem extends StatelessWidget {
   final double percentage;
   final bool isCircle;
 
-  ChartItem({
+  const ChartItem({Key? key,
     required this.value,
     required this.day,
     required this.percentage,
     required this.isCircle,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

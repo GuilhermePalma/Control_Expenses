@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Chart extends StatelessWidget {
-  Chart({
+  const Chart({Key? key,
     required this.listTransactions,
     required this.quantityDays,
     required this.changeWindow,
-  });
+  }) : super(key: key);
 
   final List<Transaction> listTransactions;
   final int quantityDays;
