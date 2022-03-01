@@ -18,55 +18,49 @@ class _ChartScreenState extends State<ChartScreen> {
   /// Variavel que armazenará as Transações do Usuario
   final List<Transaction> transactionList = dummyTransactions;
 
-  /// Armazena a Quantidade dos "Ultimos Dias" exibidos no Chart.
+  /// Armazena o valor do Intervalo exibidos no Chart.
   int _quantityDays = 7;
 
-  /// Armazena o Valor da quantidade dos "Utlimos Dias" Disponivel
+  /// Armazena o Valor de Intervalos de Transações do Grafico
   final List<int> lastDays = [7, 10, 14, 35, 91];
 
   // Variavel que Controla o Estade de "Ver" ou não a Legenda do Grafico
   bool _showCaptionChart = false;
 
-  /// Obtem as Transações dentro do Intervalo de Dias. Intervalo a partir da Data Atual
-  ///
-  /// int quantityDays: Representa quantos dias Estarão no Intervalo
+  /// Obtem as Transações dentro do Intervalo de Dias Informado
   List<Transaction> lastWeekTransactions(int quantityDays) {
-    /// Obtem os Dias da Lista anteriores ao dia atual que satisfação ao Intervalo
     return transactionList.where((element) {
-      // Verifica se a Data é depois do Periodo Especificado
+      // Verifica se a Data está no Periodo Determinado
       bool isAfterDate = element.date
           .isAfter(DateTime.now().subtract(Duration(days: quantityDays)));
-
-      // Verifica se a Data é antes do dia Atual
       bool isBeforeDate = element.date.isBefore(DateTime.now());
+
       return isAfterDate && isBeforeDate;
     }).toList();
   }
 
-  _changeWindow(int quantityDays, bool isNextWindow) {
-    int position = isNextWindow
-        ? lastDays.indexOf(quantityDays) + 1
-        : lastDays.indexOf(quantityDays) - 1;
+  // Função que controla os dias que serão exibidos no Grafico
+  _changeWindow(int actualDay, bool isNextDay) {
+    // Obtem o Index do Item e Configura se está avançando ou recuando na Lista
+    int actualIndex = isNextDay
+        ? lastDays.indexOf(actualDay) + 1
+        : lastDays.indexOf(actualDay) - 1;
 
-    if (position >= lastDays.length) {
-      // Caso a Posição seja o Ultimo Item da Lista, exibe o Primeiro
-      _quantityDays = lastDays.first;
-    } else if (position < 0) {
-      // Caso a Posição seja o Primeiro Item da Lista e esteja voltando, exibe o Ultimo
-      _quantityDays = lastDays.last;
+    // Verifica o Index Passado e Configura qual Item será Exibido
+    if (actualIndex >= lastDays.length) {
+      setState(() => _quantityDays = lastDays.first);
+    } else if (actualIndex < 0) {
+      setState(() => _quantityDays = lastDays.last);
     } else {
-      // Soma/Subtrai para a Posição Sucessora/Antecessora
-      _quantityDays = lastDays.elementAt(position);
+      setState(() => _quantityDays = lastDays.elementAt(actualIndex));
     }
-
-    // Atualiza a Quantidade de Dias Exibido
-    setState(() => _quantityDays);
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Chart(
             listTransactions: lastWeekTransactions(_quantityDays),

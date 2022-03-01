@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Chart extends StatelessWidget {
-  const Chart({Key? key,
+  const Chart({
+    Key? key,
     required this.listTransactions,
     required this.quantityDays,
     required this.changeWindow,
@@ -16,8 +17,9 @@ class Chart extends StatelessWidget {
 
   /// Retorna uma Lista com agrupando as Transações do mesmo Dia
   List<Map<String, Object>> get _groupedTransactions {
+    // Gera uma Lista Agrupando as Transações e os seus Dias
     return List.generate(quantityDays, (index) {
-      // Variavel que gerará os valores dos ultimos 7 dias dinamicamente
+      // Obtem o Dia que será agrupado as Transações
       final dayWeek = DateTime.now().subtract(Duration(days: index));
 
       double sumDay = 0.0;
@@ -31,8 +33,7 @@ class Chart extends StatelessWidget {
         if (sameDay && sameMonth && sameYear) sumDay += item.value;
       }
 
-      // Retorna um Map com o Dia da Semana (Sigla em Ingles) e o Valor do Dia
-      // todo: alterar para DateFormat.E().format(dayWeek)[0]
+      // Retorna um Map com o Dia e o valor Gasto nele
       return {"dayWeek": DateFormat('d/MM').format(dayWeek), "value": sumDay};
     });
   }
@@ -53,13 +54,79 @@ class Chart extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget get _chartConfigured {
     // Obtem os Valores que serão utilizados (Evita Execução Desnecessaria)
     final groupedTransactions = _groupedTransactions;
     final double totalValueWeek = _totalValueWeek(groupedTransactions);
 
-    // Retorna o Grafico Configurado
+    return quantityDays <= 10
+        ? Row(
+            children: groupedTransactions.reversed.map((item) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
+                  ),
+                  child: ChartItem(
+                    value: (item["value"] as double),
+                    day: (item["dayWeek"] as String),
+                    percentage: totalValueWeek == 0
+                        ? 0
+                        : (item["value"] as double) / totalValueWeek,
+                    isCircle: false,
+                  ),
+                ),
+              );
+            }).toList(),
+          )
+        : Column(
+            children: List.generate(
+              _totalWeek,
+              (index) {
+                // Variaveis que amrazenam os Valores que serão obtidos da Semana
+                int initialValue = index == 0 ? 0 : 7 * (index);
+                int finalValue = 7 * (index == 0 ? 1 : index + 1);
+
+                if (finalValue > groupedTransactions.length) {
+                  finalValue = groupedTransactions.length;
+                }
+
+                /// Retorna uma Linha com os Itens
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: groupedTransactions
+                      .getRange(initialValue, finalValue)
+                      .toList()
+                      .map((item) {
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 5,
+                            ),
+                            child: ChartItem(
+                              value: (item["value"] as double),
+                              day: (item["dayWeek"] as String),
+                              percentage: totalValueWeek == 0
+                                  ? 0
+                                  : (item["value"] as double) / totalValueWeek,
+                              isCircle: true,
+                            ),
+                          ),
+                        );
+                      })
+                      .toList()
+                      .reversed
+                      .toList(),
+                );
+              },
+            ).reversed.toList(),
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(20),
       elevation: 6,
@@ -82,71 +149,7 @@ class Chart extends StatelessWidget {
               ),
             ],
           ),
-          quantityDays <= 10
-              ? Row(
-                  children: groupedTransactions.reversed.map((item) {
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 5,
-                        ),
-                        child: ChartItem(
-                          value: (item["value"] as double),
-                          day: (item["dayWeek"] as String),
-                          percentage: totalValueWeek == 0
-                              ? 0
-                              : (item["value"] as double) / totalValueWeek,
-                          isCircle: false,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                )
-              : Column(
-                  children: List.generate(
-                    _totalWeek,
-                    (index) {
-                      // Variaveis que amrazenam os Valores que serão obtidos da Semana
-                      int initialValue = index == 0 ? 0 : 7 * (index);
-                      int finalValue = 7 * (index == 0 ? 1 : index + 1);
-
-                      if (finalValue > groupedTransactions.length) {
-                        finalValue = groupedTransactions.length;
-                      }
-
-                      /// Retorna uma Linha com os Itens
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: groupedTransactions
-                            .getRange(initialValue, finalValue)
-                            .toList()
-                            .map((item) {
-                              return Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 5,
-                                  ),
-                                  child: ChartItem(
-                                    value: (item["value"] as double),
-                                    day: (item["dayWeek"] as String),
-                                    percentage: totalValueWeek == 0
-                                        ? 0
-                                        : (item["value"] as double) /
-                                            totalValueWeek,
-                                    isCircle: true,
-                                  ),
-                                ),
-                              );
-                            })
-                            .toList()
-                            .reversed
-                            .toList(),
-                      );
-                    },
-                  ).reversed.toList(),
-                ),
+          _chartConfigured,
         ],
       ),
     );
