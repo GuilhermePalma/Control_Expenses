@@ -237,12 +237,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         : Scaffold(
             appBar: _appBarAndroid,
             body: _bodyWidget(_appBarAndroid.preferredSize.height),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => _openTransactionForm(context),
-              child: const Icon(Icons.add),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
           );
   }
 }
